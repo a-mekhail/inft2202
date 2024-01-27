@@ -17,30 +17,62 @@ function validateEmailAddressSimple(emailString) {
     return true;
 }
 
-/*
- * Validate the email address
-* @param {string} emailString
-* @returns {boolean}    validation result
-*/
-function validateEmailAddressRegex(emailString) {
-    //the regular expression to validate the email address for string+string|number bewten 2-20 characters
-    // note the / and / at the beginning and end of the expression
-    var emailRegex = /^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/;
-
-    //return true if the email address is valid - how to use regex
-	return !!emailString && typeof emailString === 'string'
-		&& emailString.match(emailRegex);
-}
-
-function validateRegistration(event) {
-console.log("form submitted: ", event)
+/**
+ * Validate the username
+ * @param {string} username the username to validate
+ * @returns {string} returns any errors or blank string if valid
+ */
+function validateUsername(username) {
+    // Trim whitespaces from username
+    username = username.trim()
+    if (username.length == 0) {
+        return "Username cannot be blank";
+    }
+    if (username.length < 3) {
+        return "Username must be at least 3 characters"
+    }
 }
 
 const registrationForm = document.getElementById("registration-form");
-registrationForm.addEventListener('submit', e => {
-    console.log(e)
+const error = document.getElementById("generalError");
+
+/**
+ * Validate the registration form on the submit event
+ */
+registrationForm.addEventListener('submit', (e) => {
+    // form input attributes
+    const username = document.getElementById("usernameInput");
+    const email = document.getElementById("inputEmail4");
+
+    // array to store errors
+    let errors = [];
+
+    // validate the email
+    if (!validateEmailAddressSimple(email.value)) {
+        errors.push("Invalid Email")
+    }
+
+    // validate the username
+    let usernameError = validateUsername(username.value);
+    if (usernameError != "") {
+        errors.push(usernameError);
+    }
+
+    // if there is any errors, update the error in the html and prevent the form from submitting
+    if (errors.length > 0) {
+        error.innerText = errors.join("\n");
+        error.style.color = "red";
+        e.preventDefault();
+    }
 });
 
+/**
+ * Clear errors when the form is reset
+ */
+registrationForm.addEventListener('reset', (e) => {
+    error.innerText = "";
+    error.style.color = "";
+});
 
 //TODO:
 // Make all fields required (HTML)
