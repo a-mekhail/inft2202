@@ -7,7 +7,7 @@ console.log('app.js loaded')
  * iffe to insert nav bar at the top of each page
  */
 $(function () {
-    let navBar = `<div class="naviation">
+    let navBar = `<div class="navigation">
 	                <nav class="nav">
 		                <a class="nav-link active" href="index.html">Home</a>
 		                <a class="nav-link" href="slideshow.html">Slideshow</a>
