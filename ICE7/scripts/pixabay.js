@@ -9,7 +9,7 @@ const PIXABAY_API_KEY = '42777428-06918c242c81f27e7b7cd4052'; // normally we wou
 // URL for Pixbay request
 const PIXABAY_URL = 'https://pixabay.com/api/?key=' + PIXABAY_API_KEY;
 // Constant for image count
-const IMAGE_COUNT = 10;
+const IMAGE_COUNT = 30;
 
 /**
  * makePosts
@@ -51,7 +51,7 @@ const makePosts = (count) => {
  */
 const getPictures = (count) => {
     // use fetch to get the pictures from the API
-    return fetch(PIXABAY_URL + `&per_page=${count}`)
+    return fetch(PIXABAY_URL + `&q=monkey&image_type=photo&orientation=horizontal&per_page=${count}`)
     .then(res => res.json())
     .then(body => body.hits)
     .catch(err => {
