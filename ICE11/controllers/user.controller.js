@@ -1,16 +1,23 @@
 const { response } = require("express");
 const bcrypt = require('bcrypt');
-
+const model = require('mongoose');
 const { User } = require("../models/user");
+
+const saltRounds = 12;
 
 /**
  * search database to see if username exists
  * @param {*} usernameToFind 
  * @returns 
  */
-function userExists(usernameToFind) {
+function userExists(username) {
     // HINT use .find() with query selection
-    console.log('--TODO: implement userExists')
+    User.findOne({username}).then(function(user) {
+        if (user) {
+            return true
+        }
+    })
+    return false
 }
 
 /**
@@ -75,15 +82,29 @@ exports.postLogin = (req, res) => {
     // check to see if user pass combo exists
     // render either login-failure or login-success
     // TODO: check against DB instead of hardcoded values
+    User.findOne({username}).then(function(user) {
+        if (user) {
+            bcrypt.compare(password, user.hashPassword, function(err, res) {
+                if (err == null && res) {
+                    // User successfully logged in
+                    getLoginSuccess(req, res);
+                } else {
+                    getLoginFailure(req, res);
+                }
+            })
+        } else {
+            getLoginFailure(req, res);
+        }
+    })
 
-    if (username === 'admin' && password === 'admin') {
-        // user password combination matches, show success
-        this.getLoginSuccess(req, res);
-    } else {
-        // user password combination failed/does not exist
-        // show error message
-        this.getLoginFailure(req, res);
-    }
+    // if (username === 'admin' && password === 'admin') {
+    //     // user password combination matches, show success
+    //     this.getLoginSuccess(req, res);
+    // } else {
+    //     // user password combination failed/does not exist
+    //     // show error message
+    //     this.getLoginFailure(req, res);
+    // }
 }
 
 
@@ -119,6 +140,23 @@ exports.postRegister = (req, res) => {
         }) ;
     } else {
         // create a new user, show registerConfirm page
+        bcrypt.hash(password, saltRounds, function(err, hash) {
+            if (err == null && hash) {
+                let userData = {
+                    username,
+                    hashPassword: hash
+                }
+
+                let userObj = new User(userData);
+                userObj.save();
+                res.render('login', {
+                    pageTitle: 'login',
+                    errorMessage: ''
+                });
+            } else {
+                console.log(err)
+            }
+        })
     }
 }
 
